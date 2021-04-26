@@ -1,0 +1,63 @@
+{
+  "name": "mvc-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./server/app.js",
+  "scripts": {
+    "buildLoginBundle": "babel ./client/login ./client/helper --presets @babel/preset-react --out-file ./hosted/loginBundle.js",
+    "buildAppBundle": "babel ./client/app ./client/helper --presets @babel/preset-react --out-file ./hosted/bundle.js",
+    "build": "npm run buildLoginBundle && npm run buildAppBundle",
+    "watchLoginBundle": "babel --watch ./client/login ./client/helper --presets @babel/preset-react --out-file ./hosted/loginBundle.js",
+    "watchAppBundle": "babel --watch ./client/app ./client/helper --presets @babel/preset-react --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./server ./server/app.js",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "engines": {
+    "node": "12.14.1",
+    "npm": "6.13.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jacobnine87/MVC-Project.git"
+  },
+  "keywords": [
+    "Node",
+    "MVC",
+    "Redis",
+    "React"
+  ],
+  "author": "Jacob Nemeth",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/compat-data": "^7.13.15",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.13.13",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "express-session": "^1.17.0",
+    "helmet": "^3.21.3",
+    "mongoose": "^5.9.5",
+    "redis": "^3.0.2",
+    "serve-favicon": "^2.5.0",
+    "underscore": "^1.9.2"
+  },
+  "bugs": {
+    "url": "https://github.com/Jacobnine87/MVC-Project/issues"
+  },
+  "homepage": "https://github.com/Jacobnine87/MVC-Project#readme"
+}
