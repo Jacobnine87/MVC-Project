@@ -1,4 +1,6 @@
-const handleQuote = e => {
+"use strict";
+
+var handleQuote = function handleQuote(e) {
   e.preventDefault();
   $("#popupMessage").animate({
     width: 'hide'
@@ -7,25 +9,45 @@ const handleQuote = e => {
   if ($("#quoteText").val() == '' || $("#quotedPerson").val() == '' || $("#quoteDate").val() == '') {
     handleError("RAWR! All fields are required!");
     return false;
+  } //debugger;
+
+
+  sendAjax('POST', $('#quoteForm').attr('action'), $('#quoteForm').serialize(), function () {
+    loadQuotesFromServer($('#csrf').val());
+  });
+  return false;
+};
+
+var handleDelete = function handleDelete(e) {
+  e.preventDefault();
+  sendAjax('DELETE', $('#deleteQuoteForm').attr('action'), $('#deleteQuoteForm').serialize(), function () {
+    loadQuotesFromServer($('#csrf').val());
+  });
+  return false;
+};
+
+var handlePassChange = function handlePassChange(e) {
+  e.preventDefault();
+  $("#popupMessage").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("QUACK! All fields required!");
+    return false;
   }
 
-  sendAjax('POST', $('#quoteForm').attr('action'), $('#quoteForm').serialize(), () => {
-    loadQuotesFromServer($('#csrf').val());
-  });
-  return false;
+  if ($("#pass").val() !== $("#pass2").val()) {
+    handleError("QUACK! Passwords don't match!");
+    return false;
+  }
+
+  sendAjax('POST', $("#passChangeForm").attr("action"), $("#passChangeForm").serialize(), redirect);
 };
 
-const handleDelete = e => {
-  e.preventDefault();
-  sendAjax('DELETE', $('#deleteQuoteForm').attr('action'), $('#deleteQuoteForm').serialize(), () => {
-    loadQuotesFromServer($('#csrf').val());
-  });
-  return false;
-};
+var formClasses = "box";
 
-const formClasses = `box`;
-
-const QuoteForm = props => {
+var QuoteForm = function QuoteForm(props) {
   return /*#__PURE__*/React.createElement("form", {
     id: "quoteForm",
     onSubmit: handleQuote,
@@ -43,17 +65,14 @@ const QuoteForm = props => {
     type: "text",
     name: "speaker",
     placeholder: "Who said it?"
-  }), /*#__PURE__*/React.createElement("label", {
-    className: "switch"
-  }, /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("input", {
+    id: "public",
     type: "checkbox",
     name: "public",
     defaultChecked: true
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "slider round"
-  }, /*#__PURE__*/React.createElement("p", {
+  }), /*#__PURE__*/React.createElement("p", {
     id: "sliderText"
-  }, "Public?"))), /*#__PURE__*/React.createElement("input", {
+  }, "Public?"), /*#__PURE__*/React.createElement("input", {
     id: "csrf",
     type: "hidden",
     name: "_csrf",
@@ -65,20 +84,18 @@ const QuoteForm = props => {
   }));
 };
 
-const QuoteList = props => {
+var QuoteList = function QuoteList(props) {
   if (props.quotes.length === 0) {
     return /*#__PURE__*/React.createElement("div", {
       className: "quoteList"
     }, /*#__PURE__*/React.createElement("h3", {
       className: "emptyQuote"
     }, "No Quotes Yet!"));
-  }
-
-  console.log(props); // Debugging
-  //	TODO: https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/
+  } //	TODO: https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/
   //	THIS ^^ Would look really cool
 
-  const quoteNodes = props.quotes.map(quote => {
+
+  var quoteNodes = props.quotes.map(function (quote) {
     return /*#__PURE__*/React.createElement("div", {
       key: quote._id,
       className: "quote"
@@ -90,7 +107,7 @@ const QuoteList = props => {
       className: "quote"
     }, "Quote: ", quote.quote, " "), /*#__PURE__*/React.createElement("h3", {
       className: "speaker"
-    }, " -", quote.speaker, " "), /*#__PURE__*/React.createElement("form", {
+    }, " - ", quote.speaker, " "), /*#__PURE__*/React.createElement("form", {
       id: "deleteQuoteForm",
       name: "deleteQuoteForm",
       onSubmit: handleDelete,
@@ -103,12 +120,12 @@ const QuoteList = props => {
       value: props.csrf
     }), /*#__PURE__*/React.createElement("input", {
       type: "hidden",
-      name: "quote",
-      value: quote.quote
+      name: "id",
+      value: quote._id
     }), /*#__PURE__*/React.createElement("input", {
       className: "formSubmit",
       type: "submit",
-      value: "\uE020"
+      value: "X"
     })));
   });
   return /*#__PURE__*/React.createElement("div", {
@@ -116,50 +133,115 @@ const QuoteList = props => {
   }, quoteNodes);
 };
 
-const loadQuotesFromServer = csrf => {
-  sendAjax('GET', '/getQuotes', null, data => {
+var PassChangeWindow = function PassChangeWindow(props) {
+  return /*#__PURE__*/React.createElement("form", {
+    id: "passChangeForm",
+    name: "passChangeForm",
+    onSubmit: handlePassChange,
+    action: "/changepassword",
+    method: "POST",
+    className: formClasses
+  }, /*#__PURE__*/React.createElement("input", {
+    id: "user",
+    type: "text",
+    name: "username",
+    placeholder: "Username"
+  }), /*#__PURE__*/React.createElement("input", {
+    id: "pass",
+    type: "password",
+    name: "pass",
+    placeholder: "New Password"
+  }), /*#__PURE__*/React.createElement("input", {
+    id: "pass2",
+    type: "password",
+    name: "pass2",
+    placeholder: "Retype New Password"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    className: "formSubmit",
+    type: "submit",
+    value: "Change Password!"
+  }));
+};
+
+var loadQuotesFromServer = function loadQuotesFromServer(csrf) {
+  sendAjax('GET', '/quotes', null, function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(QuoteList, {
       quotes: data.quotes,
       csrf: csrf
-    }), document.getElementById('quotes'));
+    }), document.getElementById('content'));
   });
 };
 
-const setup = csrf => {
+var createPassChangeWindow = function createPassChangeWindow(csrf) {
+  ReactDOM.render( /*#__PURE__*/React.createElement(PassChangeWindow, {
+    csrf: csrf
+  }), document.getElementById('content'));
+};
+
+var setup = function setup(csrf) {
+  var passChangeButton = document.getElementById('changePassButton');
+  var makerButton = document.getElementById('makerButton');
+  var quotesButton = document.getElementById('quotesButton');
+  var allQuotesButton = document.getElementById('allQuotesButton');
+  passChangeButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    createPassChangeWindow(csrf);
+  });
+  makerButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    ReactDOM.render( /*#__PURE__*/React.createElement(QuoteForm, {
+      csrf: csrf
+    }), document.getElementById('content'));
+  });
+  quotesButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    loadQuotesFromServer();
+  });
+  allQuotesButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    sendAjax('GET', '/allquotes', null, function (data) {
+      ReactDOM.render( /*#__PURE__*/React.createElement(QuoteList, {
+        quotes: data.quotes,
+        csrf: csrf
+      }), document.getElementById('content'));
+    });
+  });
   ReactDOM.render( /*#__PURE__*/React.createElement(QuoteForm, {
     csrf: csrf
-  }), document.getElementById('makeQuote'));
-  ReactDOM.render( /*#__PURE__*/React.createElement(QuoteList, {
-    quotes: [],
-    csrf: csrf
-  }), document.getElementById('quotes'));
+  }), document.getElementById('content'));
   loadQuotesFromServer(csrf);
 };
 
-const getToken = () => {
-  sendAjax('GET', '/getToken', null, result => {
+var getToken = function getToken() {
+  sendAjax('GET', '/getToken', null, function (result) {
     setup(result.csrfToken);
   });
 };
 
-$(document).ready(() => {
+$(document).ready(function () {
   getToken();
 });
-const handleError = message => {
+"use strict";
+
+var handleError = function handleError(message) {
   $("#errorMessage").text(message);
-  $("#domoMessage").animate({
+  $("#popupMessage").animate({
     width: 'toggle'
   }, 350);
 };
 
-const redirect = response => {
-  $("domoMessage").animate({
+var redirect = function redirect(response) {
+  $("popupMessage").animate({
     width: 'hide'
   }, 350);
   window.location = response.redirect;
 };
 
-const sendAjax = (type, action, data, success) => {
+var sendAjax = function sendAjax(type, action, data, success) {
   $.ajax({
     cache: false,
     type: type,
@@ -167,8 +249,8 @@ const sendAjax = (type, action, data, success) => {
     data: data,
     dataType: "json",
     success: success,
-    error: (xhr, status, err) => {
-      let messageObj = JSON.parse(xhr.responseText);
+    error: function error(xhr, status, err) {
+      var messageObj = JSON.parse(xhr.responseText);
       handleError(messageObj.error);
     }
   });

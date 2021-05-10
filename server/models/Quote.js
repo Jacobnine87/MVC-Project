@@ -48,6 +48,9 @@ QuoteSchema.statics.findByAuthor = (authorId, callback) => {
   return QuoteModel.find(search).select('quote speaker public').lean().exec(callback);
 };
 
+QuoteSchema.statics.deleteId = (quoteId, callback) => QuoteModel.findByIdAndDelete(quoteId)
+  .lean().exec(callback);
+
 QuoteSchema.statics.deleteByAuthorQuote = (authorId, argQuote, callback) => {
   const search = {
     author: convertId(authorId),

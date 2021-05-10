@@ -18,7 +18,7 @@ const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/MVCProject';
 
 const mongooseOptions = {
   useNewUrlParser: true,
-  userUnifiedTopology: true,
+  useUnifiedTopology: true,
   useCreateIndex: true,
 };
 

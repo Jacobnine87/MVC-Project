@@ -6,7 +6,7 @@ const handleLogin = (e) => {
 	$("#popupMessage").animate({width:'hide'}, 350);
 
 	if($("#user").val() == '' || $("#pass").val() == '') {
-		handleError("QUACK! Username or password is empty!");
+		handleError("QUACK! Something's Empty!");
 		return false;
 	}
 
@@ -21,7 +21,7 @@ const handleSignup = (e) => {
 	$("#popupMessage").animate({width:'hide'}, 350);
 
 	if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-		handleError("QUACK! All fields are required!");
+		handleError("QUACK! All fields required!");
 		return false;
 	}
 
@@ -100,7 +100,6 @@ const setup = (csrf) => {
 		e.preventDefault();
 		createLoginWindow(csrf);
 	});
-
 
 	createLoginWindow(csrf);
 };

@@ -46,6 +46,51 @@ const validatePassword = (doc, password, callback) => {
     return callback(true);
   });
 };
+/*
+AccountSchema.statics.changePassword = (username, originalPass, newPass, callback) => {
+  AccountModel.findByUsername(username, (err, doc) => {
+    if (err) {
+      console.log('Error in changePassword\'s findByUsername call!');
+      return callback(err);
+    }
+
+    if (!doc) {
+      console.log('No doc in changePassword\'s findByUsername call!');
+      return callback();
+    }
+
+    const docParam = [...doc];
+
+    return validatePassword(docParam, originalPass, (result) => {
+      if (result === true) {
+        //  Valid password, set new pass
+        crypto.pbkdf2(newPass, doc.salt, iterations, keyLength, 'RSA-SHA512', (err2, hash) => {
+          if (err2) console.log(err2);
+          docParam.password = hash.toString('hex');
+          const savePromise = docParam.save();
+          savePromise.then(() => callback());
+        });
+      } else {
+        console.log('Incorrect password validation in changePassword');
+      }
+    });
+  });
+};
+*/
+
+AccountSchema.statics.changePassword = (id, salt, hash, callback) => {
+  const newData = {
+    password: hash,
+    salt,
+  };
+
+  AccountModel.findByIdAndUpdate(id, newData, (err, result) => {
+    if (err) return callback(err);
+    return result;
+  });
+
+  return callback();
+};
 
 AccountSchema.statics.findByUsername = (name, callback) => {
   const search = {

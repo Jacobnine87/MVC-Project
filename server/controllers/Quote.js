@@ -14,8 +14,7 @@ const makerPage = (req, res) => {
 
 const makeQuote = (req, res) => {
   if (!req.body.quote
-    || !req.body.speaker
-    || req.body.public === undefined) {
+    || !req.body.speaker) {
     console.log(`req.body.quote: ${req.body.quote}`);
     console.log(`req.body.public: ${req.body.public}`);
     return res.status(400).json({ error: 'QUACK! All fields are required!' });
@@ -44,7 +43,7 @@ const makeQuote = (req, res) => {
 
   return quotePromise;
 };
-
+/*
 const deleteQuote = (req, res) => Quote.QuoteModel.deleteByAuthorQuote(
   req.session.account._id,
   req.body.quote,
@@ -56,6 +55,14 @@ const deleteQuote = (req, res) => Quote.QuoteModel.deleteByAuthorQuote(
     return res.status(204).send();
   },
 );
+*/
+const deleteQuote = (req, res) => Quote.QuoteModel.deleteId(req.body.id, (err, docs) => {
+  if (err) {
+    console.log(err);
+    return res.status(400).json({ error: 'An error occurred' });
+  }
+  return res.json({ quotes: docs });
+});
 
 const getQuotes = (req, res) => Quote.QuoteModel.findByAuthor(
   req.session.account._id, (err, docs) => {
@@ -67,7 +74,29 @@ const getQuotes = (req, res) => Quote.QuoteModel.findByAuthor(
   },
 );
 
+const quotePage = (req, res) => {
+  Quote.QuoteModel.findByAuthor(req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred. ' });
+    }
+    return res.json({ csrfToken: req.csrfToken(), quotes: docs });
+  });
+};
+
+const allQuotesPage = (req, res) => {
+  Quote.QuoteModel.find({ public: true }, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred. ' });
+    }
+    return res.json({ csrfToken: req.csrfToken(), quotes: docs });
+  });
+};
+
 module.exports.makerPage = makerPage;
+module.exports.quotePage = quotePage;
+module.exports.allQuotesPage = allQuotesPage;
 module.exports.getQuotes = getQuotes;
 module.exports.make = makeQuote;
 module.exports.delete = deleteQuote;

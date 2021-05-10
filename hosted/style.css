@@ -9,8 +9,40 @@ body {
 	height: 40px;
 	width: 40px;
 	padding-top: 5px;
+	padding-left: 20px;
 	float: left;
 	border-radius: 8px;
+}
+
+nav {
+	width: 100%;
+	height: 50px;
+	background-color: #191919;
+}
+
+.navlink a, .navlink a:link, .navlink a:visited, .navlink a:active {
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+    border: 0;
+    border: 2px solid #3498db;
+    border-radius: 12px ;
+    background: none;
+    transition: background-color 0.4s ease;
+}
+
+.navlink a:hover {
+	transition: 0.25s;
+	background-color: #3498db;
+}
+
+.navlink {
+    padding: 5px;
+    padding-top: 12px;
+    padding-left: 20px;
+    color: white;
+    font-size: 1.3em;
+    float: left;
 }
 
 .switch {
@@ -103,10 +135,10 @@ input: checked + .slider:before {
 }
 
 .quote {
-	width: 95%;
+	width: 60%;
 	margin: 0 auto;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	border: 2px solid black; /* border: 2px solid #55acee; */
 	border-radius: 4px;
 	/* background-color: #55acee; */
